@@ -1,0 +1,6 @@
+django==4.2.3
+djangorestframework
+psycopg2-binary
+django-filter
+gunicorn
+python-dotenv

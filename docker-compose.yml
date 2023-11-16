@@ -1,0 +1,38 @@
+version: "3.9"
+
+volumes:
+  pgdata:
+
+services:
+  db:
+    container_name: pgdb
+    image: postgres:13
+    restart: always
+    environment:
+      POSTGRES_DB: dock_comp_db
+      POSTGRES_USER: roman
+      POSTGRES_PASSWORD: 300589
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  django_web:
+    container_name: web
+    build: ./stocks_products
+
+    command: gunicorn stocks_products.wsgi:application -b 0.0.0.0:8000
+    volumes:
+      - ./stocks_products/static/:/app/static/
+    env_file:
+      ./stocks_products/.env
+    depends_on:
+      - db
+
+  nginx:
+    build: ./nginx
+    volumes:
+      - ./stocks_products/static/:/app/static/
+    ports:
+      - 8000:80
+    depends_on:
+      - django_web
+
